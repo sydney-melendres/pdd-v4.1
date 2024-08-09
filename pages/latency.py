@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
-st.set_page_config(page_title="Latency Analysis", page_icon="📊")
+st.set_page_config(page_title="Latency Analysis", page_icon="📊", layout="wide")
 
 @st.cache_data
 def load_data():
@@ -51,19 +51,48 @@ if df is not None:
     st.subheader(f'Statistics for Latency {selected_latency}')
     st.dataframe(result_dfs[selected_latency])
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    # Create an interactive line plot
+    fig = go.Figure()
 
     for player_ip in df['player_ip'].unique():
         means = [result_dfs[latency].loc[player_ip, 'Mean'] for latency in result_dfs.keys() if player_ip in result_dfs[latency].index]
-        ax.plot(list(result_dfs.keys()), means, marker='o', label=f'Player {player_ip}')
-    
-    ax.set_xticks(list(result_dfs.keys()))
-    ax.set_xlabel('Latency')
-    ax.set_ylabel('Mean Score')
-    ax.set_title('Players\' Mean Scores vs Latency')
-    ax.legend()
+        fig.add_trace(go.Scatter(x=list(result_dfs.keys()), y=means, mode='lines+markers', name=f'Player {player_ip}'))
 
-    st.pyplot(fig)
+    fig.update_layout(
+        title={
+            'text': 'Players\' Mean Scores vs Latency',
+            'y':0.98,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': {'size': 20}
+        },
+        xaxis_title='Latency',
+        yaxis_title='Mean Score',
+        height=650,  # Slightly reduced height
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+            font=dict(size=10)  # Reduced font size for legend
+        ),
+        margin=dict(t=100)  # Increased top margin to accommodate centered legend
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Additional information
+    # st.write("Note: This chart shows how each player's mean score changes with different latency values. "
+    #          "Each line represents a player, allowing you to compare performance across latencies.")
 
 else:
     st.error("Cannot proceed with analysis due to data loading error.")
+
+# Display available columns
+# st.subheader("Available Data Columns")
+# if df is not None:
+#     st.write(f"Columns in the dataset: {', '.join(df.columns)}")
+# else:
+#     st.write("Data not available.")

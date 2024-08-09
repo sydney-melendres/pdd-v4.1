@@ -72,6 +72,6 @@ else:
     st.warning("Please select a round to view the scoreboard.")
 
 # Display available columns
-st.subheader("Available Data Columns")
-st.write(f"Columns in the player performance dataset: {', '.join(df.columns)}")
-st.write(f"Columns in the round summary dataset: {', '.join(sb.columns)}")
+# st.subheader("Available Data Columns")
+# st.write(f"Columns in the player performance dataset: {', '.join(df.columns)}")
+# st.write(f"Columns in the round summary dataset: {', '.join(sb.columns)}")
