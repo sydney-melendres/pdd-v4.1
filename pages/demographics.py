@@ -1,25 +1,46 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
+import textwrap
 
-st.set_page_config(page_title="Demographics Analysis", page_icon="📊")
+st.set_page_config(page_title="Demographics Analysis", page_icon="📊", layout="wide")
 
 # File path
 csv_file = 'survey-data/demographics.csv'
 
-# Function to plot pie chart for a categorical column
-def plot_pie_chart(column_name, df):
+# Function to plot interactive pie chart for a categorical column
+def plot_interactive_pie_chart(column_name, df):
     # Count unique values for the column, excluding NaN
     counts = df[column_name].value_counts(dropna=True)
     
-    # Create a new figure
-    fig, ax = plt.subplots(figsize=(8, 6))
+    # Wrap the title if it's too long
+    wrapped_title = '<br>'.join(textwrap.wrap(f'Distribution of {column_name}', width=50))
     
-    # Plotting the pie chart
-    counts.plot.pie(autopct='%1.1f%%', startangle=140, ax=ax)
-    ax.set_title(f'Distribution of {column_name}')
-    ax.set_ylabel('')  # Remove the default ylabel 'column_name'
-    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    # Create an interactive pie chart using Plotly
+    fig = px.pie(
+        values=counts.values,
+        names=counts.index,
+        title=wrapped_title,
+        hover_data=[counts.values],  # Show the actual count on hover
+        labels={'label': column_name, 'value': 'Count'}
+    )
+    
+    # Update layout for better appearance
+    fig.update_traces(textposition='inside', textinfo='percent+label')
+    fig.update_layout(
+        showlegend=False,
+        height=600,  # Slightly reduced height
+        width=800,
+        title={
+            'text': f'<b>{wrapped_title}</b>',
+            'y':0.95,  # Slightly lowered the title
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': {'size': 18}
+        },
+        margin=dict(t=60, b=20, l=20, r=20)  # Reduced top margin
+    )
     
     return fig
 
@@ -29,8 +50,8 @@ def load_data():
     return pd.read_csv(csv_file)
 
 # Main content
-st.title('Participant Demographics Analysis')
-st.info('Pie Charts of Demographics Data')
+st.title('Interactive Participant Demographics Analysis')
+st.info('Interactive Pie Charts of Demographics Data')
 
 # Load the data
 df = load_data()
@@ -45,7 +66,12 @@ if df is not None:
     
     if columns_to_plot:
         for column in columns_to_plot:
-            fig = plot_pie_chart(column, df)
-            st.pyplot(fig)
+            fig = plot_interactive_pie_chart(column, df)
+            # Use columns to center the chart
+            col1, col2, col3 = st.columns([1,6,1])
+            with col2:
+                st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.warning("Please select at least one column to display the chart.")
 else:
     st.error("Failed to load the data. Please check the file path and try again.")

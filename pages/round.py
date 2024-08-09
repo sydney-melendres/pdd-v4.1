@@ -1,25 +1,34 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 
+st.set_page_config(page_title="Round Scoreboard", page_icon="🏆", layout="wide")
 
-def draw_bar(file_path, player_option):
-    return "Hllow"
+# File paths
+source = "final-data/player_performance.csv"
+sb_summary = "final-data/round_summary_adjusted.csv"
 
-def main():
-    st.title("Round Scoreboard")
-    
-    source = "final-data/player_performance.csv"
-    sb_summary = "final-data/round_summary_adjusted.csv"
+# Load data
+@st.cache_data
+def load_data():
     df = pd.read_csv(source)
     sb = pd.read_csv(sb_summary)
-    
-    select_latency = df['latency'].unique()
-    select_latency.sort()
-    select_round = df['game_round'].unique()
-    
-    option_round = st.selectbox("Select a Round", [""] + list(select_round), key='round_select', index=1)
-    
+    return df, sb
+
+df, sb = load_data()
+
+# Page title
+st.title("Round Scoreboard")
+
+# Data preparation
+select_latency = df['latency'].unique()
+select_latency.sort()
+select_round = df['game_round'].unique()
+
+# Round selection
+option_round = st.selectbox("Select a Round", [""] + list(select_round), key='round_select', index=1)
+
+if option_round:
     round_scoreboard = sb[sb['game_round'] == int(option_round)]
     map_name = round_scoreboard['map'].iloc[0] if not round_scoreboard.empty else "N/A"
     latency = round_scoreboard['latency'].iloc[0] if not round_scoreboard.empty else "N/A"
@@ -33,19 +42,36 @@ def main():
     
     round_scoreboard = round_scoreboard.drop(columns=['game_round', 'map', 'latency'])
 
-    # Create a bar chart for the round scoreboard
-    fig, ax = plt.subplots()
-    round_scoreboard.plot(kind='bar', x='player_id', y='score', ax=ax, legend=False)
-    ax.set_xlabel('Player IP')
-    ax.set_ylabel('Score')
-    ax.set_title(f'Score by Player IP for Round {option_round}')
-    st.pyplot(fig)
+    # Create an interactive bar chart for the round scoreboard
+    fig = px.bar(round_scoreboard, x='player_id', y='score',
+                 title=f'Score by Player ID for Round {option_round}',
+                 labels={'player_id': 'Player ID', 'score': 'Score'},
+                 height=500)
+    fig.update_layout(
+        xaxis_title='Player ID',
+        yaxis_title='Score',
+        title={
+            'y':0.95,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': {'size': 18}
+        }
+    )
+    st.plotly_chart(fig, use_container_width=True)
     
     # Sort the table by score in descending order and display it
     round_scoreboard_sorted = round_scoreboard.sort_values(by='score', ascending=False)
-    st.write(round_scoreboard_sorted)
-    
+    st.subheader("Detailed Scoreboard")
+    st.dataframe(round_scoreboard_sorted)
 
-    
-    
-main()
+    # Additional information
+    st.write("Note: This page displays the scoreboard for a selected round, including an interactive bar chart of scores and a detailed table.")
+
+else:
+    st.warning("Please select a round to view the scoreboard.")
+
+# Display available columns
+st.subheader("Available Data Columns")
+st.write(f"Columns in the player performance dataset: {', '.join(df.columns)}")
+st.write(f"Columns in the round summary dataset: {', '.join(sb.columns)}")
