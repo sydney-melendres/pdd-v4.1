@@ -1,11 +1,17 @@
 import streamlit as st
 from datetime import datetime
+from PIL import Image
 
 # Set page config
 st.set_page_config(page_title="Large Event Experiments", layout="wide")
 
 # Main title
 st.title("Large Event Experiments")
+
+# Add poster image
+# Note: Replace 'path_to_your_image.jpg' with the actual path to your image file
+poster_image = Image.open('Images/largeevent.png')
+st.image(poster_image, caption='Event Poster', use_column_width=True)
 
 # Upcoming Events
 st.header("Upcoming Events")

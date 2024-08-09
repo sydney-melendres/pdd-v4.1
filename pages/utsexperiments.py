@@ -8,6 +8,10 @@ st.set_page_config(page_title="UTS Campus Experiments", layout="wide")
 
 # Main title
 st.title("UTS Campus Experiments")
+# Add poster image
+# Note: Replace 'path_to_your_image.jpg' with the actual path to your image file
+poster_image = Image.open('Images/utsevent.png')
+st.image(poster_image, caption='Event Poster', use_column_width=True)
 
 # Subtitle
 st.header("Welcome to the Gaming Latency Impact Study")
