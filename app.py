@@ -4,7 +4,7 @@ pages = {
     "Home": [ 
         st.Page("pages/landing_page.py", title="Welcome", icon=":material/waving_hand:"),
         st.Page("pages/start_here.py", title="Start Here", icon=":material/start:"),
-        st.Page("pages/dashboard.py", title="Dashboard", icon=":material/dashboard:"),
+        # st.Page("pages/dashboard.py", title="Dashboard", icon=":material/dashboard:"),
     ],
     "Demographic": [
         st.Page("pages/demographics.py", title="Participant Analysis", icon=":material/demography:"),  
