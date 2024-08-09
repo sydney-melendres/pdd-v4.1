@@ -15,6 +15,10 @@ pages = {
         # st.Page("pages/map.py", title="Map Analysis", icon=":material/public:"),
         st.Page("pages/latency.py", title="Latency Analysis", icon=":material/signal_cellular_alt:")
     ],
+    "Gaming Experiments":[
+        st.Page("pages/utsexperiments.py", title="UTS Campus Experiments", icon=":material/person:"),
+        st.Page("pages/eventexperiments.py", title="Large Event Experiments", icon=":material/person:"),
+    ],
     "Support": [
         st.Page("pages/how_to.py", title="How to", icon=":material/info:"),
     ],   
