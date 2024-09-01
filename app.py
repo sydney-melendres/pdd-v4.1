@@ -21,6 +21,7 @@ pages = {
     ],
     "Support": [
         st.Page("pages/how_to.py", title="How to", icon=":material/info:"),
+        st.Page("pages/credits.py", title="Credits", icon=":material/copyright:"),
     ],   
 }
 
